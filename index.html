@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manifiesto — Cotizador de Proveedores</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+  :root{
+    --ink: #16233A;
+    --ink-soft: #3A4A63;
+    --paper: #F3F4F7;
+    --paper-raised: #FFFFFF;
+    --line: #D8DCE3;
+    --amber: #D98E04;
+    --amber-deep: #B8760A;
+    --steel: #4A6FA5;
+    --green: #2F7D5C;
+    --red: #B4402C;
+    --shadow: 0 1px 2px rgba(22,35,58,0.06), 0 4px 14px rgba(22,35,58,0.05);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--paper);}
+  body{
+    font-family:'Inter',sans-serif;
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:'IBM Plex Mono',monospace;}
+
+  #app{max-width:1080px;margin:0 auto;padding:28px 20px 80px;}
+
+  /* Header */
+  .masthead{
+    display:flex;justify-content:space-between;align-items:flex-end;
+    border-bottom:3px solid var(--ink);
+    padding-bottom:14px;margin-bottom:22px;
+    gap:16px;flex-wrap:wrap;
+  }
+  .masthead-title{
+    font-family:'Archivo',sans-serif;font-weight:800;
+    font-size:28px;letter-spacing:-0.02em;color:var(--ink);
+    display:flex;align-items:baseline;gap:10px;
+  }
+  .masthead-title .stamp{
+    font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:11px;
+    letter-spacing:0.08em;text-transform:uppercase;color:var(--amber-deep);
+    border:1.5px solid var(--amber-deep);border-radius:3px;padding:3px 7px;
+  }
+  .masthead-sub{font-size:12.5px;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;}
+
+  /* Tabs */
+  .tabs{display:flex;gap:4px;margin-bottom:22px;border-bottom:1px solid var(--line);}
+  .tab{
+    font-family:'Archivo',sans-serif;font-weight:600;font-size:14.5px;
+    padding:10px 16px;cursor:pointer;color:var(--ink-soft);
+    border-bottom:3px solid transparent;transition:all .15s ease;
+    user-select:none;
+  }
+  .tab:hover{color:var(--ink);}
+  .tab.active{color:var(--ink);border-bottom-color:var(--amber);}
+  .tab .count{
+    display:inline-block;margin-left:6px;font-family:'IBM Plex Mono',monospace;
+    font-size:11px;background:var(--line);color:var(--ink-soft);
+    border-radius:10px;padding:1px 7px;
+  }
+
+  .panel{display:none;}
+  .panel.active{display:block;animation:fadeIn .2s ease;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(3px);}to{opacity:1;transform:translateY(0);}}
+
+  .card{
+    background:var(--paper-raised);border:1px solid var(--line);border-radius:8px;
+    box-shadow:var(--shadow);padding:18px 20px;margin-bottom:16px;
+  }
+  .card h2{
+    font-family:'Archivo',sans-serif;font-size:15px;font-weight:700;margin:0 0 12px;
+    display:flex;align-items:center;gap:8px;
+  }
+  .card h2 .idx{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--amber-deep);
+    background:#FBF0DC;border-radius:4px;padding:2px 6px;
+  }
+
+  label{font-size:12px;font-weight:600;color:var(--ink-soft);display:block;margin-bottom:4px;}
+  input[type=text]{
+    width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:6px;
+    font-family:'Inter',sans-serif;font-size:14px;color:var(--ink);
+    background:#fff;transition:border-color .15s;
+  }
+  input.mono{font-family:'IBM Plex Mono',monospace;}
+  input[type=text]:focus{outline:none;border-color:var(--steel);box-shadow:0 0 0 3px rgba(74,111,165,0.13);}
+
+  .row{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;}
+  .row > div{flex:1;min-width:140px;}
+
+  button{
+    font-family:'Archivo',sans-serif;font-weight:600;font-size:13.5px;
+    border:none;border-radius:6px;padding:9px 16px;cursor:pointer;
+    transition:transform .1s ease, background .15s;
+  }
+  button:active{transform:scale(0.97);}
+  .btn-primary{background:var(--ink);color:#fff;}
+  .btn-primary:hover{background:#22344f;}
+  .btn-amber{background:var(--amber);color:#fff;}
+  .btn-amber:hover{background:var(--amber-deep);}
+  .btn-ghost{background:transparent;color:var(--ink-soft);border:1px solid var(--line);}
+  .btn-ghost:hover{border-color:var(--ink-soft);color:var(--ink);}
+  .btn-danger{background:transparent;color:var(--red);}
+  .btn-danger:hover{background:#FBEAE6;}
+  .btn-sm{padding:5px 10px;font-size:12px;}
+
+  /* Supplier chips */
+  .supplier-list{display:flex;flex-direction:column;gap:8px;}
+  .supplier-item{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:#FAFAFB;
+  }
+  .supplier-item .name{font-weight:600;font-size:14px;}
+  .supplier-item .contact{font-size:12px;color:var(--ink-soft);margin-left:8px;}
+  .empty{
+    text-align:center;color:var(--ink-soft);font-size:13.5px;padding:26px 10px;
+    border:1.5px dashed var(--line);border-radius:8px;
+  }
+
+  /* Product matrix */
+  table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  thead th{
+    text-align:left;font-family:'Archivo',sans-serif;font-size:11.5px;
+    text-transform:uppercase;letter-spacing:0.04em;color:var(--ink-soft);
+    padding:8px 10px;border-bottom:2px solid var(--ink);position:sticky;top:0;background:var(--paper-raised);
+  }
+  tbody td{padding:6px 10px;border-bottom:1px solid var(--line);vertical-align:middle;}
+  tbody tr:hover{background:#FAFBFC;}
+  .prod-name-cell{font-weight:600;min-width:160px;}
+  .sku-input{width:100%;padding:6px 8px;font-size:13px;}
+  .table-wrap{overflow-x:auto;}
+  .del-row{color:var(--red);cursor:pointer;font-size:16px;line-height:1;padding:4px 8px;background:none;border:none;}
+  .del-row:hover{opacity:0.6;}
+
+  /* Quote builder */
+  .search-box{position:relative;}
+  .search-results{
+    position:absolute;top:100%;left:0;right:0;background:#fff;
+    border:1px solid var(--line);border-radius:6px;box-shadow:var(--shadow);
+    margin-top:4px;max-height:220px;overflow-y:auto;z-index:20;
+  }
+  .search-results div{padding:9px 12px;cursor:pointer;font-size:13.5px;}
+  .search-results div:hover{background:#FBF0DC;}
+  .selected-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
+  .chip{
+    display:flex;align-items:center;gap:6px;background:var(--ink);color:#fff;
+    padding:6px 10px;border-radius:20px;font-size:13px;font-weight:500;
+  }
+  .chip .x{cursor:pointer;opacity:0.7;font-size:13px;}
+  .chip .x:hover{opacity:1;}
+
+  .selected-list{margin-top:14px;display:flex;flex-direction:column;gap:6px;}
+  .selected-row{
+    display:flex;align-items:center;gap:10px;
+    padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:#FAFAFB;
+  }
+  .selected-row .pname{flex:1;font-size:13.5px;font-weight:600;}
+  .selected-row .qty-wrap{display:flex;align-items:center;gap:6px;}
+  .selected-row .qty-wrap label{margin:0;font-size:11px;color:var(--ink-soft);font-weight:500;}
+  .selected-row input.qty-input{
+    width:70px;padding:5px 8px;font-size:13px;text-align:right;
+    font-family:'IBM Plex Mono',monospace;
+  }
+  .selected-row .x{cursor:pointer;color:var(--red);font-size:15px;padding:2px 4px;}
+  .selected-row .x:hover{opacity:0.6;}
+
+  .manifest{
+    background:#fff;border:1px solid var(--line);border-radius:8px;
+    box-shadow:var(--shadow);margin-top:18px;overflow:hidden;
+  }
+  .manifest-header{
+    background:var(--ink);color:#fff;padding:14px 18px;
+    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;
+  }
+  .manifest-header .t{font-family:'Archivo',sans-serif;font-weight:700;font-size:15px;}
+  .manifest-block{border-bottom:1px dashed var(--line);padding:16px 18px;}
+  .manifest-block:last-child{border-bottom:none;}
+  .manifest-block .supplier-title{
+    font-family:'Archivo',sans-serif;font-weight:700;font-size:14px;
+    display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;
+  }
+  .manifest-block .supplier-title .badge{
+    font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--ink-soft);
+    background:var(--paper);border-radius:4px;padding:2px 7px;font-weight:500;
+  }
+  .manifest-row{
+    display:flex;justify-content:space-between;padding:6px 0;font-size:13.5px;
+    border-bottom:1px solid #F0F1F3;
+  }
+  .manifest-row:last-child{border-bottom:none;}
+  .manifest-row .sku{font-family:'IBM Plex Mono',monospace;color:var(--steel);font-weight:600;}
+  .manifest-actions{padding:14px 18px;background:var(--paper);display:flex;gap:10px;flex-wrap:wrap;}
+  .missing-note{font-size:12px;color:var(--red);font-style:italic;}
+
+  .toast{
+    position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+    background:var(--ink);color:#fff;padding:10px 18px;border-radius:6px;
+    font-size:13.5px;font-family:'Archivo',sans-serif;font-weight:600;
+    box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:opacity .25s, transform .25s;
+    z-index:100;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(-6px);}
+
+  ::placeholder{color:#A6ADBB;}
+  @media (max-width:600px){
+    .masthead-title{font-size:22px;}
+    .row > div{min-width:100%;}
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div class="masthead">
+    <div>
+      <div class="masthead-title">Manifiesto <span class="stamp">Cotizador</span></div>
+      <div class="masthead-sub">proveedores · productos · SKU · cotización</div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="proveedores">Proveedores <span class="count" id="count-suppliers">0</span></div>
+    <div class="tab" data-tab="productos">Productos &amp; SKUs <span class="count" id="count-products">0</span></div>
+    <div class="tab" data-tab="cotizacion">Armar cotización</div>
+  </div>
+
+  <!-- PROVEEDORES -->
+  <div class="panel active" id="panel-proveedores">
+    <div class="card">
+      <h2><span class="idx">01</span> Nuevo proveedor</h2>
+      <div class="row">
+        <div>
+          <label>Nombre del proveedor</label>
+          <input type="text" id="sup-name" placeholder="Ej: Distribuidora Andes">
+        </div>
+        <div>
+          <label>Email (para enviar la cotización)</label>
+          <input type="text" id="sup-email" placeholder="compras@proveedor.com">
+        </div>
+        <div>
+          <label>Teléfono / contacto (opcional)</label>
+          <input type="text" id="sup-contact" placeholder="Opcional">
+        </div>
+        <div style="flex:0 0 auto;">
+          <button class="btn-amber" onclick="addSupplier()">+ Agregar</button>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h2><span class="idx">02</span> Proveedores cargados</h2>
+      <div class="supplier-list" id="supplier-list"></div>
+    </div>
+  </div>
+
+  <!-- PRODUCTOS -->
+  <div class="panel" id="panel-productos">
+    <div class="card">
+      <h2><span class="idx">01</span> Nuevo producto</h2>
+      <div class="row">
+        <div>
+          <label>Nombre del producto</label>
+          <input type="text" id="prod-name" placeholder="Ej: Tornillo hexagonal 1/4&quot;">
+        </div>
+        <div style="flex:0 0 auto;">
+          <button class="btn-amber" onclick="addProduct()">+ Agregar producto</button>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h2><span class="idx">02</span> Matriz de SKUs por proveedor</h2>
+      <div id="matrix-empty" class="empty">Agregá al menos un proveedor y un producto para completar la matriz de SKUs.</div>
+      <div class="table-wrap">
+        <table id="matrix-table" style="display:none;">
+          <thead><tr id="matrix-head"></tr></thead>
+          <tbody id="matrix-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- COTIZACION -->
+  <div class="panel" id="panel-cotizacion">
+    <div class="card">
+      <h2><span class="idx">01</span> Buscar productos</h2>
+      <div class="search-box">
+        <input type="text" id="quote-search" placeholder="Escribí el nombre de un producto..." autocomplete="off">
+        <div class="search-results" id="search-results" style="display:none;"></div>
+      </div>
+      <div id="selected-list"></div>
+    </div>
+    <div id="manifest-container"></div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let db = { suppliers: [], products: [] };
+let selectedProductIds = [];
+let selectedQuantities = {}; // { productId: qty }
+
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+
+function loadDB(){
+  try{
+    const saved = localStorage.getItem('cotizador_db');
+    if(saved){
+      db = JSON.parse(saved);
+    }
+  }catch(e){
+    console.error('Error cargando datos', e);
+    showToast('No se pudieron cargar los datos guardados.');
+  }
+  render();
+}
+
+function saveDB(){
+  try{
+    localStorage.setItem('cotizador_db', JSON.stringify(db));
+  }catch(e){
+    console.error('Error guardando', e);
+    showToast('No se pudo guardar. Verificá el almacenamiento del navegador.');
+  }
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 1800);
+}
+
+// ---------- TABS ----------
+document.querySelectorAll('.tab').forEach(tab=>{
+  tab.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('panel-'+tab.dataset.tab).classList.add('active');
+  });
+});
+
+// ---------- SUPPLIERS ----------
+function addSupplier(){
+  const nameEl = document.getElementById('sup-name');
+  const emailEl = document.getElementById('sup-email');
+  const contactEl = document.getElementById('sup-contact');
+  const name = nameEl.value.trim();
+  const email = emailEl.value.trim();
+  if(!name){ showToast('Poné un nombre de proveedor'); return; }
+  if(email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+    showToast('Ese email no parece válido'); return;
+  }
+  db.suppliers.push({ id: uid(), name, email, contact: contactEl.value.trim() });
+  nameEl.value = ''; emailEl.value=''; contactEl.value = '';
+  saveDB(); render();
+}
+
+function removeSupplier(id){
+  if(!confirm('¿Eliminar este proveedor? Se borrarán también sus SKUs cargados.')) return;
+  db.suppliers = db.suppliers.filter(s=>s.id!==id);
+  db.products.forEach(p=>{ delete p.skus[id]; });
+  saveDB(); render();
+}
+
+// ---------- PRODUCTS ----------
+function addProduct(){
+  const nameEl = document.getElementById('prod-name');
+  const name = nameEl.value.trim();
+  if(!name){ showToast('Poné un nombre de producto'); return; }
+  db.products.push({ id: uid(), name, skus: {} });
+  nameEl.value = '';
+  saveDB(); render();
+}
+
+function removeProduct(id){
+  if(!confirm('¿Eliminar este producto?')) return;
+  db.products = db.products.filter(p=>p.id!==id);
+  selectedProductIds = selectedProductIds.filter(pid=>pid!==id);
+  saveDB(); render();
+}
+
+function updateSku(prodId, supId, value){
+  const p = db.products.find(p=>p.id===prodId);
+  if(!p) return;
+  p.skus[supId] = value;
+  saveDB();
+}
+
+// ---------- RENDER ----------
+function render(){
+  document.getElementById('count-suppliers').textContent = db.suppliers.length;
+  document.getElementById('count-products').textContent = db.products.length;
+  renderSuppliers();
+  renderMatrix();
+  renderChips();
+  renderManifest();
+}
+
+function renderSuppliers(){
+  const list = document.getElementById('supplier-list');
+  if(db.suppliers.length===0){
+    list.innerHTML = '<div class="empty">Todavía no cargaste proveedores.</div>';
+    return;
+  }
+  list.innerHTML = db.suppliers.map(s=>`
+    <div class="supplier-item">
+      <div>
+        <span class="name">${escapeHtml(s.name)}</span>
+        ${s.email?`<span class="contact mono">${escapeHtml(s.email)}</span>`:'<span class="contact" style="color:var(--red);">sin email</span>'}
+        ${s.contact?`<span class="contact">${escapeHtml(s.contact)}</span>`:''}
+      </div>
+      <button class="btn-danger btn-sm" onclick="removeSupplier('${s.id}')">Eliminar</button>
+    </div>
+  `).join('');
+}
+
+function renderMatrix(){
+  const table = document.getElementById('matrix-table');
+  const empty = document.getElementById('matrix-empty');
+  if(db.suppliers.length===0 || db.products.length===0){
+    table.style.display='none'; empty.style.display='block';
+    return;
+  }
+  table.style.display='table'; empty.style.display='none';
+
+  const head = document.getElementById('matrix-head');
+  head.innerHTML = '<th>Producto</th>' + db.suppliers.map(s=>`<th>${escapeHtml(s.name)}</th>`).join('') + '<th></th>';
+
+  const body = document.getElementById('matrix-body');
+  body.innerHTML = db.products.map(p=>{
+    const cells = db.suppliers.map(s=>`
+      <td>
+        <input type="text" class="sku-input mono" placeholder="SKU"
+          value="${escapeHtml(p.skus[s.id]||'')}"
+          onchange="updateSku('${p.id}','${s.id}', this.value)">
+      </td>
+    `).join('');
+    return `<tr>
+      <td class="prod-name-cell">${escapeHtml(p.name)}</td>
+      ${cells}
+      <td><button class="del-row" onclick="removeProduct('${p.id}')" title="Eliminar producto">✕</button></td>
+    </tr>`;
+  }).join('');
+}
+
+// ---------- QUOTE BUILDER ----------
+const searchInput = document.getElementById('quote-search');
+const searchResults = document.getElementById('search-results');
+
+searchInput.addEventListener('input', ()=>{
+  const q = searchInput.value.trim().toLowerCase();
+  if(!q){ searchResults.style.display='none'; return; }
+  const matches = db.products.filter(p=>
+    p.name.toLowerCase().includes(q) && !selectedProductIds.includes(p.id)
+  ).slice(0,8);
+  if(matches.length===0){
+    searchResults.innerHTML = '<div style="color:#A6ADBB;cursor:default;">Sin resultados</div>';
+  }else{
+    searchResults.innerHTML = matches.map(p=>`<div onclick="selectProduct('${p.id}')">${escapeHtml(p.name)}</div>`).join('');
+  }
+  searchResults.style.display='block';
+});
+
+document.addEventListener('click', (e)=>{
+  if(!e.target.closest('.search-box')) searchResults.style.display='none';
+});
+
+function selectProduct(id){
+  if(!selectedProductIds.includes(id)){
+    selectedProductIds.push(id);
+    selectedQuantities[id] = 1;
+  }
+  searchInput.value='';
+  searchResults.style.display='none';
+  render();
+}
+
+function deselectProduct(id){
+  selectedProductIds = selectedProductIds.filter(pid=>pid!==id);
+  delete selectedQuantities[id];
+  render();
+}
+
+function updateQty(id, value){
+  let n = parseFloat(value);
+  if(isNaN(n) || n < 0) n = 1;
+  selectedQuantities[id] = n;
+  renderManifest();
+}
+
+function renderChips(){
+  const wrap = document.getElementById('selected-list');
+  if(selectedProductIds.length===0){
+    wrap.innerHTML = '';
+    return;
+  }
+  wrap.innerHTML = '<div class="selected-list">' + selectedProductIds.map(id=>{
+    const p = db.products.find(p=>p.id===id);
+    if(!p) return '';
+    const qty = selectedQuantities[id] ?? 1;
+    return `<div class="selected-row">
+      <span class="pname">${escapeHtml(p.name)}</span>
+      <div class="qty-wrap">
+        <label>Cant.</label>
+        <input type="number" class="qty-input mono" min="0" step="1" value="${qty}"
+          onchange="updateQty('${id}', this.value)">
+      </div>
+      <span class="x" onclick="deselectProduct('${id}')" title="Quitar">✕</span>
+    </div>`;
+  }).join('') + '</div>';
+}
+
+function renderManifest(){
+  const container = document.getElementById('manifest-container');
+  if(selectedProductIds.length===0){
+    container.innerHTML='';
+    return;
+  }
+  const selectedProducts = selectedProductIds.map(id=>db.products.find(p=>p.id===id)).filter(Boolean);
+
+  let blocks = db.suppliers.map(s=>{
+    const rows = selectedProducts.map(p=>{
+      const sku = p.skus[s.id];
+      const qty = selectedQuantities[p.id] ?? 1;
+      if(sku && sku.trim()){
+        return `<div class="manifest-row"><span>${escapeHtml(p.name)} <span class="mono" style="color:var(--ink-soft);">×${qty}</span></span><span class="sku">${escapeHtml(sku)}</span></div>`;
+      }else{
+        return `<div class="manifest-row"><span>${escapeHtml(p.name)} <span class="mono" style="color:var(--ink-soft);">×${qty}</span></span><span class="missing-note">sin SKU cargado</span></div>`;
+      }
+    }).join('');
+    const hasEmail = s.email && s.email.trim();
+    return `<div class="manifest-block" data-supplier="${escapeHtml(s.name)}">
+      <div class="supplier-title">
+        <span>${escapeHtml(s.name)}</span>
+        <span class="badge">${selectedProducts.length} ítem(s)</span>
+      </div>
+      ${rows}
+      <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn-amber btn-sm" onclick="sendEmail('${s.id}')" ${hasEmail?'':'disabled title="Cargá el email del proveedor en la pestaña Proveedores"'} ${hasEmail?'':'style="opacity:0.45;cursor:not-allowed;"'}>✉ Enviar por correo</button>
+        <button class="btn-ghost btn-sm" onclick="copyToClipboard(buildManifestText('${s.id}'))">Copiar este bloque</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  container.innerHTML = `
+    <div class="manifest" id="manifest">
+      <div class="manifest-header">
+        <span class="t">Lista de cotización</span>
+        <span class="mono" style="font-size:11px;opacity:0.8;">${new Date().toLocaleDateString('es-AR')}</span>
+      </div>
+      ${blocks}
+      <div class="manifest-actions">
+        <button class="btn-primary" onclick="copyFullManifest()">Copiar lista completa</button>
+      </div>
+    </div>
+  `;
+}
+
+function buildManifestText(supplierFilter){
+  const selectedProducts = selectedProductIds.map(id=>db.products.find(p=>p.id===id)).filter(Boolean);
+  const suppliers = supplierFilter ? db.suppliers.filter(s=>s.id===supplierFilter) : db.suppliers;
+  let text = '';
+  suppliers.forEach(s=>{
+    text += `PROVEEDOR: ${s.name}\n`;
+    selectedProducts.forEach(p=>{
+      const sku = p.skus[s.id];
+      const qty = selectedQuantities[p.id] ?? 1;
+      text += `- ${p.name} | Cantidad: ${qty} | SKU: ${sku && sku.trim() ? sku : '(sin SKU cargado)'}\n`;
+    });
+    text += '\n';
+  });
+  return text.trim();
+}
+
+async function sendEmail(supplierId){
+  const s = db.suppliers.find(s=>s.id===supplierId);
+  if(!s || !s.email || !s.email.trim()){
+    showToast('Ese proveedor no tiene email cargado');
+    return;
+  }
+
+  const selectedProducts = selectedProductIds
+    .map(id=>db.products.find(p=>p.id===id))
+    .filter(Boolean);
+
+  const payload = {
+    supplier: {
+      id: s.id,
+      name: s.name,
+      email: s.email,
+      contact: s.contact || ''
+    },
+    products: selectedProducts.map(p => ({
+      id: p.id,
+      name: p.name,
+      sku: p.skus[s.id] || '',
+      quantity: selectedQuantities[p.id] ?? 1
+    })),
+    subject: `Solicitud de cotización — ${s.name}`,
+    text: buildManifestText(supplierId) +
+      `\n\nPor favor, envíenos precio y disponibilidad para los ítems detallados. Gracias.`
+  };
+
+  // Vercel Serverless Function endpoint.
+  // Create /api/send-quote.js in the project to activate real sending.
+  try{
+    const button = document.querySelector(
+      `.manifest-block[data-supplier="${CSS.escape(s.name)}"] .btn-amber`
+    );
+    if(button) button.disabled = true;
+
+    const response = await fetch('/api/send-quote', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(payload)
+    });
+
+    const result = await response.json().catch(()=>({}));
+
+    if(!response.ok){
+      throw new Error(result.error || `Error HTTP ${response.status}`);
+    }
+
+    showToast('Cotización enviada correctamente');
+  }catch(e){
+    console.error('Error enviando cotización', e);
+
+    // Fallback while the Vercel API is not configured.
+    if(location.protocol === 'file:' || e instanceof TypeError){
+      const mailtoUrl =
+        `mailto:${encodeURIComponent(s.email)}` +
+        `?subject=${encodeURIComponent(payload.subject)}` +
+        `&body=${encodeURIComponent(payload.text)}`;
+      window.location.href = mailtoUrl;
+      showToast('API no disponible: se abrió tu correo');
+    }else{
+      showToast('No se pudo enviar. Revisá la configuración del correo.');
+    }
+  }finally{
+    const button = document.querySelector(
+      `.manifest-block[data-supplier="${CSS.escape(s.name)}"] .btn-amber`
+    );
+    if(button) button.disabled = false;
+  }
+}
+
+async function copyToClipboard(text){
+  try{
+    await navigator.clipboard.writeText(text);
+    showToast('Copiado al portapapeles');
+  }catch(e){
+    showToast('No se pudo copiar automáticamente');
+  }
+}
+
+function copyFullManifest(){
+  copyToClipboard(buildManifestText(null));
+}
+
+function escapeHtml(str){
+  if(str===undefined || str===null) return '';
+  return str.replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+loadDB();
+</script>
+</body>
+</html>
