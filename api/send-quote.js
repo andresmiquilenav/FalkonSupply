@@ -19,6 +19,7 @@ export default async function handler(req, res) {
         service_id: process.env.EMAILJS_SERVICE_ID,
         template_id: process.env.EMAILJS_TEMPLATE_ID,
         user_id: process.env.EMAILJS_PUBLIC_KEY,
+        accessToken: process.env.EMAILJS_PUBLIC_KEY, // Doble compatibilidad para la API
         template_params: {
           to: to,
           subject: subject || 'Cotización Falkon Supply',
@@ -29,7 +30,7 @@ export default async function handler(req, res) {
 
     if (!response.ok) {
       const errorText = await response.text();
-      throw new Error(errorText || 'Error al comunicarse com EmailJS');
+      throw new Error(errorText || 'Error al comunicarse con EmailJS');
     }
 
     return res.status(200).json({ success: true });
