@@ -19,13 +19,14 @@ module.exports = async function handler(req, res) {
 
     const apiKey = process.env.RESEND_API_KEY;
     if (!apiKey) {
-      return.status(500).json({ error: 'Falta configurar la RESEND_API_KEY en Vercel' });
+      return res.status(500).json({ error: 'Falta configurar la RESEND_API_KEY' });
     }
 
     const resend = new Resend(apiKey);
 
+    // Asegúrate de cambiar 'tudominio.com' por el dominio real que registraste en Resend
     const data = await resend.emails.send({
-      from: 'Falkon Supply <onboarding@resend.dev>',
+      from: 'Falkon Supply <ventas@falkon.cl>', 
       to: [to],
       subject: subject || 'Cotización Falkon Supply',
       html: htmlContent || '<p>Sin contenido</p>',
@@ -33,11 +34,9 @@ module.exports = async function handler(req, res) {
 
     return res.status(200).json({ success: true, data });
   } catch (error) {
-    console.error('Error detallado:', error);
-    // Esto enviará el error exacto a tu navegador para verlo al instante
+    // Esto enviará el error exacto a la pantalla en lugar de un mensaje genérico
     return res.status(500).json({ 
-      error: error.message, 
-      details: error.stack 
+      error: 'Error de Resend: ' + error.message 
     });
   }
 };
