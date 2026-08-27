@@ -29,4 +29,4 @@ module.exports = async function handler(req, res) {
     console.error('Error detallado en API:', error);
     return res.status(500).json({ error: error.message });
   }
-}; 
+}; .
