@@ -4,15 +4,22 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    // Importación dinámica compatible con cualquier versión de Node en Vercel
     const { Resend } = await import('resend');
 
-    const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+    let body = req.body;
+    if (typeof body === 'string') {
+      try {
+        body = JSON.parse(body);
+      } catch (e) {
+        body = {};
+      }
+    }
+    body = body || {};
     const { to, subject, htmlContent } = body;
 
     const apiKey = process.env.RESEND_API_KEY;
     if (!apiKey) {
-      throw new Error('Falta configurar la RESEND_API_KEY en Vercel');
+      return.status(500).json({ error: 'Falta configurar la RESEND_API_KEY en Vercel' });
     }
 
     const resend = new Resend(apiKey);
@@ -26,7 +33,11 @@ module.exports = async function handler(req, res) {
 
     return res.status(200).json({ success: true, data });
   } catch (error) {
-    console.error('Error detallado en API:', error);
-    return res.status(500).json({ error: error.message });
+    console.error('Error detallado:', error);
+    // Esto enviará el error exacto a tu navegador para verlo al instante
+    return res.status(500).json({ 
+      error: error.message, 
+      details: error.stack 
+    });
   }
-}; .
+};
