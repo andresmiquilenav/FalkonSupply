@@ -6,7 +6,6 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Asegurar que el body se lea correctamente como JSON
     const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
     const { to, subject, htmlContent } = body;
 
@@ -24,9 +23,9 @@ export default async function handler(req, res) {
       html: htmlContent || '<p>Sin contenido</p>',
     });
 
-    return.status(200).json({ success: true, data });
+    return res.status(200).json({ success: true, data });
   } catch (error) {
     console.error('Error enviando correo:', error);
     return res.status(400).json({ error: error.message });
   }
-}.
+}
