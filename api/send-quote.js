@@ -1,6 +1,6 @@
-import { Resend } from 'resend';
+const { Resend } = require('resend');
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método no permitido' });
   }
@@ -28,4 +28,4 @@ export default async function handler(req, res) {
     console.error('Error enviando correo:', error);
     return res.status(400).json({ error: error.message });
   }
-}
+};.
