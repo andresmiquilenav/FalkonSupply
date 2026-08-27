@@ -1,11 +1,12 @@
-const { Resend } = require('resend');
-
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método no permitido' });
   }
 
   try {
+    // Importación dinámica compatible con cualquier versión de Node en Vercel
+    const { Resend } = await import('resend');
+
     const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
     const { to, subject, htmlContent } = body;
 
@@ -25,7 +26,7 @@ module.exports = async function handler(req, res) {
 
     return res.status(200).json({ success: true, data });
   } catch (error) {
-    console.error('Error enviando correo:', error);
-    return res.status(400).json({ error: error.message });
+    console.error('Error detallado en API:', error);
+    return res.status(500).json({ error: error.message });
   }
-};.
+}; 
