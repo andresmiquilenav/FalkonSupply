@@ -10,7 +10,7 @@ export default async function handler(req, res) {
     }
     const { to, subject, htmlContent } = body || {};
 
-    const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+    const response = await fetch('https://api.emailjs.com/api/v1.0/email/send-json', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
